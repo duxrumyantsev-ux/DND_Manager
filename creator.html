@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конструктор персонажа - D&D Manager</title>
+    
+    
+    <!-- Стили -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-dragon"></i>
+                    <span>D&D Manager</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> <span>Главная</span></a></li>
+                    <li><a href="creator.html" class="nav-link active"><i class="fas fa-user-plus"></i> <span>Конструктор</span></a></li>
+                    <li><a href="encyclopedia.html" class="nav-link"><i class="fas fa-book"></i> <span>Энциклопедия</span></a></li>
+                    <li><a href="characters.html" class="nav-link"><i class="fas fa-users"></i> <span>Мои персонажи</span></a></li>
+                    <li><a href="#login" class="nav-link login-btn"><i class="fas fa-key"></i> <span>Войти</span></a></li>
+                </ul>
+                <button class="burger-menu" id="burgerMenu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Конструктор персонажа -->
+    <main class="creator-main">
+        <div class="container">
+            <div class="creator-header">
+                <h1 id="creatorTitle">Конструктор персонажа</h1>
+                <p class="creator-subtitle" id="creatorSubtitle">Создание нового персонажа D&D 5e</p>
+                
+                <div class="creator-mode" id="creatorMode">
+                    <span class="mode-badge mode-new active" id="modeNew">
+                        <i class="fas fa-plus-circle"></i> Новый персонаж
+                    </span>
+                    <span class="mode-badge mode-edit hidden" id="modeEdit">
+                        <i class="fas fa-edit"></i> Редактирование
+                    </span>
+                    <span class="mode-badge mode-loading hidden" id="modeLoading">
+                        <i class="fas fa-spinner fa-spin"></i> Загрузка...
+                    </span>
+                </div>
+                
+                <div class="creator-progress" id="creatorProgress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 14%"></div>
+                    </div>
+                    <div class="progress-steps">
+                        <span class="step active" data-step="1">Основное</span>
+                        <span class="step" data-step="2">Характеристики</span>
+                        <span class="step" data-step="3">Инвентарь</span>
+                        <span class="step" data-step="4">Состояния</span>
+                        <span class="step" data-step="5">Заклинания</span>
+                        <span class="step" data-step="6">Особенности</span>
+                        <span class="step" data-step="7">Заметки</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Форма конструктора -->
+            <form id="creatorForm" class="creator-form">
+                <!-- Шаг 1: Основное -->
+                <div class="creator-step active" id="step1" data-step="1">
+                    <div class="step-header">
+                        <h2><span class="step-number">1</span> Основная информация</h2>
+                        <p>Основные данные о вашем персонаже. Поля со звездочкой (*) обязательны для заполнения.</p>
+                    </div>
+                    
+                    <div class="step-content">
+                        <div class="form-grid grid grid-2">
+                            <div class="form-group">
+                                <label for="characterName">
+                                    <i class="fas fa-user"></i> Имя персонажа *
+                                </label>
+                                <input type="text" id="characterName" class="input" 
+                                       placeholder="Арагорн, Гендальф, Элронд..." 
+                                       required
+                                       maxlength="50">
+                                <div class="field-hint">Максимум 50 символов</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="characterRace">
+                                    <i class="fas fa-users"></i> Раса *
+                                </label>
+                                <select id="characterRace" class="select" required>
+                                    <option value="">Выберите расу...</option>
+                                    <!-- Расы будут загружены динамически -->
+                                </select>
+                                <div class="field-info" id="raceInfo">Выберите расу для просмотра бонусов</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="characterClass">
+                                    <i class="fas fa-shield-alt"></i> Класс *
+                                </label>
+                                <select id="characterClass" class="select" required>
+                                    <option value="">Выберите класс...</option>
+                                    <!-- Классы будут загружены динамически -->
+                                </select>
+                                <div class="field-info" id="classInfo">Выберите класс для просмотра особенностей</div>
+                            </div>
+                            
+                            <div class="form-group" id="subclassSection">
+                                <label for="characterSubclass">
+                                    <i class="fas fa-star"></i> Подкласс
+                                </label>
+                                <select id="characterSubclass" class="select">
+                                    <option value="">Выберите подкласс...</option>
+                                </select>
+                                <div class="field-info" id="subclassInfo">Выберите подкласс для просмотра особенностей</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="characterBackground">
+                                    <i class="fas fa-history"></i> Предыстория
+                                </label>
+                                <select id="characterBackground" class="select">
+                                    <option value="">Выберите предысторию...</option>
+                                    <option value="acolyte">Послушник</option>
+                                    <option value="charlatan">Мошенник</option>
+                                    <option value="criminal">Преступник</option>
+                                    <option value="folk-hero">Народный герой</option>
+                                    <option value="noble">Благородный</option>
+                                    <option value="sage">Мудрец</option>
+                                    <option value="soldier">Солдат</option>
+                                    <option value="urchin">Беспризорник</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="characterAlignment">
+                                    <i class="fas fa-balance-scale"></i> Мировоззрение
+                                </label>
+                                <select id="characterAlignment" class="select">
+                                    <option value="">Выберите мировоззрение...</option>
+                                    <option value="lawful-good">Законно-добрый (LG)</option>
+                                    <option value="neutral-good">Нейтрально-добрый (NG)</option>
+                                    <option value="chaotic-good">Хаотично-добрый (CG)</option>
+                                    <option value="lawful-neutral">Законно-нейтральный (LN)</option>
+                                    <option value="true-neutral">Истинно нейтральный (N)</option>
+                                    <option value="chaotic-neutral">Хаотично-нейтральный (CN)</option>
+                                    <option value="lawful-evil">Законно-злой (LE)</option>
+                                    <option value="neutral-evil">Нейтрально-злой (NE)</option>
+                                    <option value="chaotic-evil">Хаотично-злой (CE)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="characterLevel">
+                                    <i class="fas fa-chart-line"></i> Уровень *
+                                </label>
+                                <div class="level-control">
+                                    <button type="button" class="level-btn" id="levelDown">-</button>
+                                    <input type="number" id="characterLevel" class="input level-input" 
+                                           min="1" max="20" value="1" required readonly>
+                                    <button type="button" class="level-btn" id="levelUp">+</button>
+                                </div>
+                                <div class="field-info" id="levelInfo">Уровень определяет бонус мастерства и HP</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="characterXP">
+                                    <i class="fas fa-star"></i> Опыт (XP)
+                                </label>
+                                <input type="number" id="characterXP" class="input" 
+                                       min="0" value="0" step="100">
+                                <div class="field-info" id="xpInfo">0 XP = 1 уровень</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="characterSpeed">
+                                    <i class="fas fa-running"></i> Скорость
+                                </label>
+                                <div class="input-with-unit">
+                                    <input type="number" id="characterSpeed" class="input" 
+                                           min="0" value="30">
+                                    <span class="input-unit">фт.</span>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="characterAge">Возраст</label>
+                                    <input type="number" id="characterAge" class="input" min="1" max="1000" placeholder="Возраст">
+                                </div>
+                                <div class="form-group">
+                                    <label for="characterHeight">Рост</label>
+                                    <input type="text" id="characterHeight" class="input" placeholder="Рост (см)">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="characterWeight">Вес</label>
+                                    <input type="text" id="characterWeight" class="input" placeholder="Вес (кг)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="characterEyes">Цвет глаз</label>
+                                    <input type="text" id="characterEyes" class="input" placeholder="Цвет глаз">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="characterSkin">Цвет кожи</label>
+                                    <input type="text" id="characterSkin" class="input" placeholder="Цвет кожи">
+                                </div>
+                                <div class="form-group">
+                                    <label for="characterHair">Цвет волос</label>
+                                    <input type="text" id="characterHair" class="input" placeholder="Цвет волос">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-card card hidden" id="step1Preview">
+                            <h3>Предпросмотр</h3>
+                            <div class="preview-content" id="basicPreview"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-footer">
+                        <div class="step-nav">
+                            <button type="button" class="btn btn-secondary" id="cancelCreation">
+                                <i class="fas fa-times"></i> Отмена
+                            </button>
+                            <button type="button" class="btn btn-primary next-step" data-next="2">
+                                Далее <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Шаг 2: Характеристики -->
+                <div class="creator-step" id="step2" data-step="2">
+                    <div class="step-header">
+                        <h2><span class="step-number">2</span> Характеристики</h2>
+                        <p>Определите основные способности вашего персонажа. Вы можете использовать различные методы.</p>
+                    </div>
+                    
+                    <div class="step-content">
+                        <div class="abilities-intro">
+                            <div class="method-selector">
+                                <h3>Метод определения характеристик</h3>
+                                <div class="method-options">
+                                    <label class="method-option">
+                                        <input type="radio" name="abilityMethod" value="manual" checked>
+                                        <span class="method-content">
+                                            <i class="fas fa-edit"></i>
+                                            <strong>Ручной ввод</strong>
+                                            <span>Укажите значения вручную</span>
+                                        </span>
+                                    </label>
+                                    <label class="method-option">
+                                        <input type="radio" name="abilityMethod" value="standard">
+                                        <span class="method-content">
+                                            <i class="fas fa-list-ol"></i>
+                                            <strong>Стандартный набор</strong>
+                                            <span>15, 14, 13, 12, 10, 8</span>
+                                        </span>
+                                    </label>
+                                    <label class="method-option">
+                                        <input type="radio" name="abilityMethod" value="random">
+                                        <span class="method-content">
+                                            <i class="fas fa-dice"></i>
+                                            <strong>Случайные</strong>
+                                            <span>4d6, отбросить низший</span>
+                                        </span>
+                                    </label>
+                                    <label class="method-option">
+                                        <input type="radio" name="abilityMethod" value="pointbuy">
+                                        <span class="method-content">
+                                            <i class="fas fa-coins"></i>
+                                            <strong>Покупка очков</strong>
+                                            <span>27 очков для распределения</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="method-controls hidden" id="pointBuyControls">
+                                <div class="point-buy-info">
+                                    <h4>Покупка характеристик</h4>
+                                    <p>У вас есть <strong id="pointsRemaining">27</strong> очков для распределения.</p>
+                                    <p>Стоимость увеличения характеристики:</p>
+                                    <ul class="point-costs">
+                                        <li>8 → 9: 1 очко</li>
+                                        <li>9 → 10: 1 очко</li>
+                                        <li>10 → 11: 1 очко</li>
+                                        <li>11 → 12: 1 очко</li>
+                                        <li>12 → 13: 1 очко</li>
+                                        <li>13 → 14: 1 очко</li>
+                                        <li>14 → 15: 2 очка</li>
+                                        <li>15 → 16: 2 очка</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="method-actions">
+                                <button type="button" class="btn btn-secondary" id="applyMethod">
+                                    <i class="fas fa-play"></i> Применить метод
+                                </button>
+                                <button type="button" class="btn btn-outline" id="resetAbilities">
+                                    <i class="fas fa-redo"></i> Сбросить
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="abilities-container">
+                            <div class="abilities-grid" id="abilitiesGrid">
+                                <!-- Характеристики будут заполнены динамически -->
+                            </div>
+                            
+                            <div class="abilities-summary">
+                                <div class="summary-card card">
+                                    <h3>Сводка характеристик</h3>
+                                    <div class="summary-content">
+                                        <div class="summary-row">
+                                            <span class="label">Сумма модификаторов:</span>
+                                            <span class="value" id="totalModifiers">+0</span>
+                                        </div>
+                                        <div class="summary-row">
+                                            <span class="label">Среднее значение:</span>
+                                            <span class="value" id="averageScore">10.0</span>
+                                        </div>
+                                        <div class="summary-row">
+                                            <span class="label">Бонус мастерства:</span>
+                                            <span class="value" id="proficiencyBonus">+2</span>
+                                        </div>
+                                        <div class="summary-row">
+                                            <span class="label">Пассивная внимательность:</span>
+                                            <span class="value" id="passivePerception">10</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="saving-throws-section">
+                            <h3>Спасброски</h3>
+                            <div class="saving-throws-grid" id="savingThrowsGrid">
+                                <!-- Спасброски будут заполнены динамически -->
+                            </div>
+                        </div>
+                        
+                        <div class="skills-section">
+                            <h3>Навыки</h3>
+                            <div class="skills-container">
+                                <div class="skills-grid" id="skillsGrid">
+                                    <!-- Навыки будут заполнены динамически -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-footer">
+                        <div class="step-nav">
+                            <button type="button" class="btn btn-secondary prev-step" data-prev="1">
+                                <i class="fas fa-arrow-left"></i> Назад
+                            </button>
+                            <button type="button" class="btn btn-primary next-step" data-next="3">
+                                Далее <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Шаг 3: Инвентарь -->
+                <div class="creator-step" id="step3" data-step="3">
+                    <div class="step-header">
+                        <h2><span class="step-number">3</span> Инвентарь</h2>
+                        <p>Снаряжение, оружие, броня и деньги вашего персонажа.</p>
+                    </div>
+                    
+                    <div class="step-content">
+                        <div class="inventory-grid grid grid-2">
+                            <div class="inventory-section">
+                                <h3><i class="fas fa-shield-alt"></i> Броня и защита</h3>
+                                <div class="armor-controls">
+                                    <div class="form-group">
+                                        <label for="armorType">Тип брони</label>
+                                        <select id="armorType" class="select">
+                                            <option value="none">Без доспехов</option>
+                                            <option value="padded">Стёганый</option>
+                                            <option value="leather">Кожаный</option>
+                                            <option value="studded-leather">Кольчужная кожа</option>
+                                            <option value="chain-shirt">Кольчужная рубаха</option>
+                                            <option value="scale-mail">Чешуйчатый доспех</option>
+                                            <option value="breastplate">Кираса</option>
+                                            <option value="half-plate">Полулаты</option>
+                                            <option value="ring-mail">Кольчуга</option>
+                                            <option value="chain-mail">Панцирь</option>
+                                            <option value="splint">Наборный доспех</option>
+                                            <option value="plate">Латный доспех</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="hasShield">
+                                            <span class="checkbox-custom"></span>
+                                            Щит (+2 к КД)
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="ac-calculation card">
+                                        <h4>Класс брони (AC)</h4>
+                                        <div class="ac-value">
+                                            <span class="ac-number" id="calculatedAC">10</span>
+                                            <span class="ac-label">КД</span>
+                                        </div>
+                                        <div class="ac-breakdown" id="acBreakdown">
+                                            10 (база) + 0 (лов.) + 0 (броня) + 0 (щит)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="inventory-section">
+                                <h3><i class="fas fa-fist-raised"></i> Оружие</h3>
+                                <div class="weapons-container">
+                                    <div class="weapons-list" id="weaponsList">
+                                        <!-- Оружие будет добавлено динамически -->
+                                        <div class="weapon-entry" data-id="default">
+                                            <div class="weapon-fields">
+                                                <input type="text" class="input weapon-name" placeholder="Название оружия">
+                                                <input type="text" class="input weapon-damage" placeholder="Урон (1d8)">
+                                                <select class="select weapon-type">
+                                                    <option value="melee">Ближний бой</option>
+                                                    <option value="ranged">Дальний бой</option>
+                                                </select>
+                                            </div>
+                                            <button type="button" class="btn btn-small btn-danger remove-weapon">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary btn-block" id="addWeapon">
+                                        <i class="fas fa-plus"></i> Добавить оружие
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="inventory-section">
+                                <h3><i class="fas fa-backpack"></i> Снаряжение</h3>
+                                <div class="equipment-container">
+                                    <div class="equipment-list" id="equipmentList">
+                                        <!-- Предметы будут добавлены динамически -->
+                                        <div class="equipment-item">
+                                            <textarea class="input equipment-text" placeholder="Описание предмета..."></textarea>
+                                            <button type="button" class="btn btn-small btn-danger remove-equipment">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary btn-block" id="addEquipment">
+                                        <i class="fas fa-plus"></i> Добавить предмет
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="inventory-section">
+                                <h3><i class="fas fa-coins"></i> Финансы</h3>
+                                <div class="wallet-container card">
+                                    <div class="wallet-row">
+                                        <label for="platinum">Платиновые (pp)</label>
+                                        <input type="number" id="platinum" class="input wallet-input" min="0" value="0">
+                                    </div>
+                                    <div class="wallet-row">
+                                        <label for="gold">Золотые (gp)</label>
+                                        <input type="number" id="gold" class="input wallet-input" min="0" value="0">
+                                    </div>
+                                    <div class="wallet-row">
+                                        <label for="silver">Серебряные (sp)</label>
+                                        <input type="number" id="silver" class="input wallet-input" min="0" value="0">
+                                    </div>
+                                    <div class="wallet-row">
+                                        <label for="copper">Медные (cp)</label>
+                                        <input type="number" id="copper" class="input wallet-input" min="0" value="0">
+                                    </div>
+                                    <div class="wallet-total">
+                                        <strong>Всего в золотых:</strong>
+                                        <span id="totalGold">0</span> gp
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-footer">
+                        <div class="step-nav">
+                            <button type="button" class="btn btn-secondary prev-step" data-prev="2">
+                                <i class="fas fa-arrow-left"></i> Назад
+                            </button>
+                            <button type="button" class="btn btn-primary next-step" data-next="4">
+                                Далее <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Шаг 4: Состояния -->
+                <div class="creator-step" id="step4" data-step="4">
+                    <div class="step-header">
+                        <h2><span class="step-number">4</span> Здоровье и состояния</h2>
+                        <p>Управление здоровьем, костями хитов и состояниями персонажа.</p>
+                    </div>
+                    
+                    <div class="step-content">
+                        <div class="health-grid grid grid-2">
+                            <div class="health-section">
+                                <h3><i class="fas fa-heart"></i> Здоровье (HP)</h3>
+                                <div class="health-controls">
+                                    <div class="health-inputs">
+                                        <div class="hp-progress-container">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill hp-progress" id="hpProgressBar"></div>
+                                                <div id="hpPercent">100%</div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="maxHP">Максимальное HP</label>
+                                            <input type="number" id="maxHP" class="input" min="1" value="10" readonly>
+                                            <div class="field-info">Рассчитывается автоматически</div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="currentHP">Текущее HP *</label>
+                                            <input type="number" id="currentHP" class="input" min="0" value="10" required>
+                                            <div class="field-info">Можно изменять в любое время</div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="tempHP">Временное HP</label>
+                                            <input type="number" id="tempHP" class="input" min="0" value="0">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="hasInspiration">
+                                            <span class="checkbox-custom"></span>
+                                            <span>Вдохновение</span>
+                                        </label>
+                                    </div>
+                                    <div class="health-info card">
+                                        <h4>Кости хитов</h4>
+                                        <div class="hit-dice-info">
+                                            <div class="hit-dice-display">
+                                                <span class="dice-value" id="hitDiceDisplay">d10</span>
+                                                <span class="dice-label">Кость хитов</span>
+                                            </div>
+                                            <div class="hit-dice-count">
+                                                <span class="count-value" id="hitDiceCount">1</span>
+                                                <span class="count-label">Количество</span>
+                                            </div>
+                                        </div>
+                                        <div class="hit-dice-note">
+                                            Количество костей хитов равно уровню персонажа
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="health-actions">
+                                        <button type="button" class="btn btn-secondary" id="shortRest">
+                                            <i class="fas fa-bed"></i> Короткий отдых
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" id="longRest">
+                                            <i class="fas fa-moon"></i> Длинный отдых
+                                        </button>
+                                        <button type="button" class="btn btn-danger" id="takeDamage">
+                                            <i class="fas fa-skull-crossbones"></i> Получить урон
+                                        </button>
+                                        <button type="button" class="btn btn-success" id="healDamage">
+                                            <i class="fas fa-heartbeat"></i> Лечение
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="conditions-section">
+                                <h3><i class="fas fa-exclamation-triangle"></i> Состояния</h3>
+                                <div class="conditions-grid" id="conditionsGrid">
+                                    <!-- Состояния будут заполнены динамически -->
+                                </div>
+                                
+                                <div class="conditions-notes">
+                                    <label for="conditionNotes">Примечания к состояниям</label>
+                                    <textarea id="conditionNotes" class="input textarea" 
+                                              placeholder="Дополнительные заметки о состояниях..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-footer">
+                        <div class="step-nav">
+                            <button type="button" class="btn btn-secondary prev-step" data-prev="3">
+                                <i class="fas fa-arrow-left"></i> Назад
+                            </button>
+                            <button type="button" class="btn btn-primary next-step" data-next="5">
+                                Далее <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Шаг 5: Заклинания -->
+                <div class="creator-step" id="step5" data-step="5">
+                    <div class="step-header">
+                        <h2><span class="step-number">5</span> Заклинания</h2>
+                        <p id="spellsDescription">Управление заклинаниями персонажа. Можно пропустить, если класс не использует магию.</p>
+                        <div class="no-magic-notice card hidden" id="noMagicNotice">
+                            <i class="fas fa-info-circle"></i>
+                            <div>
+                                <strong>Ваш класс не использует магию</strong>
+                                <p>Этот раздел можно пропустить. Перейдите к следующему шагу.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-content">
+                        <div class="spellcasting-container hidden" id="spellcastingContainer">
+                            <div class="spell-slots-section">
+                                <h3><i class="fas fa-gem"></i> Ячейки заклинаний</h3>
+                                <div class="spell-slots-grid" id="spellSlotsGrid">
+                                    <!-- Ячейки заклинаний будут заполнены динамически -->
+                                </div>
+                                
+                                <div class="spell-slots-actions">
+                                    <button type="button" class="btn btn-secondary" id="resetSpellSlots">
+                                        <i class="fas fa-redo"></i> Сбросить использованные
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="spells-known-section">
+                                <h3><i class="fas fa-scroll"></i> Известные заклинания</h3>
+                                
+                                <div class="spells-controls">
+                                    <div class="spell-search">
+                                        <input type="text" id="spellSearch" class="input" 
+                                               placeholder="Поиск заклинания...">
+                                        <button type="button" class="btn btn-primary" id="searchSpell">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="spell-filters">
+                                        <div class="filter-group">
+                                            <label>Уровень:</label>
+                                            <div class="filter-options" id="spellLevelFilters">
+                                                <!-- Фильтры уровней будут добавлены динамически -->
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="filter-group">
+                                            <label>Школа:</label>
+                                            <div class="filter-options" id="spellSchoolFilters">
+                                                <!-- Фильтры школ будут добавлены динамически -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="spells-list" id="spellsList">
+                                    <!-- Список заклинаний будет заполнен динамически -->
+                                    <div class="empty-spells">
+                                        <i class="fas fa-magic"></i>
+                                        <p>Загружаем список заклинаний...</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="spells-actions">
+                                    <button type="button" class="btn btn-primary" id="addSpellBtn">
+                                        <i class="fas fa-plus"></i> Добавить заклинание
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" id="manageSpellsBtn">
+                                        <i class="fas fa-list"></i> Управление заклинаниями
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="skip-section" id="skipSpellsSection">
+                            <div class="skip-notice card">
+                                <i class="fas fa-forward"></i>
+                                <div>
+                                    <h4>Пропустить этот раздел</h4>
+                                    <p>Если ваш класс не использует магию или вы хотите добавить заклинания позже, вы можете пропустить этот шаг.</p>
+                                </div>
+                                <button type="button" class="btn btn-outline" id="skipSpells">
+                                    Пропустить <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-footer">
+                        <div class="step-nav">
+                            <button type="button" class="btn btn-secondary prev-step" data-prev="4">
+                                <i class="fas fa-arrow-left"></i> Назад
+                            </button>
+                            <button type="button" class="btn btn-primary next-step" data-next="6">
+                                Далее <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Шаг 6: Особенности -->
+                <div class="creator-step" id="step6" data-step="6">
+                    <div class="step-header">
+                        <h2><span class="step-number">6</span> Особенности</h2>
+                        <p>Особенности вашего персонажа от расы, класса и подкласса.</p>
+                    </div>
+                    
+                    <div class="step-content">
+                        <div class="features-grid grid grid-3">
+                            <div class="features-section">
+                                <h3><i class="fas fa-users"></i> Расовые особенности</h3>
+                                <div class="features-list" id="racialFeatures">
+                                    <!-- Расовые особенности будут заполнены динамически -->
+                                    <div class="empty-features">
+                                        <p>Выберите расу, чтобы увидеть её особенности.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="features-section">
+                                <h3><i class="fas fa-shield-alt"></i> Классовые особенности</h3>
+                                <div class="features-list" id="classFeatures">
+                                    <!-- Классовые особенности будут заполнены динамически -->
+                                    <div class="empty-features">
+                                        <p>Выберите класс, чтобы увидеть его особенности.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="features-section">
+                                <h3><i class="fas fa-star"></i> Особенности подкласса</h3>
+                                <div class="features-list" id="subclassFeatures">
+                                    <!-- Особенности подкласса будут заполнены динамически -->
+                                    <div class="empty-features">
+                                        <p>Выберите подкласс, чтобы увидеть его особенности.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="features-notes">
+                            <h3><i class="fas fa-sticky-note"></i> Дополнительные особенности</h3>
+                            <div class="form-group">
+                                <label for="additionalFeatures">Особенности от черт, предыстории или других источников</label>
+                                <textarea id="additionalFeatures" class="input textarea" 
+                                          placeholder="Опишите дополнительные особенности вашего персонажа..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-footer">
+                        <div class="step-nav">
+                            <button type="button" class="btn btn-secondary prev-step" data-prev="5">
+                                <i class="fas fa-arrow-left"></i> Назад
+                            </button>
+                            <button type="button" class="btn btn-primary next-step" data-next="7">
+                                Далее <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Шаг 7: Заметки -->
+                <div class="creator-step" id="step7" data-step="7">
+                    <div class="step-header">
+                        <h2><span class="step-number">7</span> Заметки и завершение</h2>
+                        <p>Дополнительная информация о вашем персонаже и завершение создания.</p>
+                    </div>
+                    
+                    <div class="step-content">
+                        <div class="notes-grid grid grid-2">
+                            <div class="notes-section">
+                                <h3><i class="fas fa-book"></i> История</h3>
+                                <div class="form-group">
+                                    <label for="historyNotes">История персонажа</label>
+                                    <textarea id="historyNotes" class="input textarea" 
+                                              placeholder="Напишите историю вашего персонажа..."></textarea>
+                                    <div class="field-info">Можно оставить пустым и заполнить позже</div>
+                                </div>
+                                <div class="notes-tools">
+                                    <button type="button" class="btn btn-small btn-secondary" id="clearHistory">
+                                        <i class="fas fa-eraser"></i> Очистить
+                                    </button>
+                                    <button type="button" class="btn btn-small btn-secondary" id="generateHistory">
+                                        <i class="fas fa-wand-magic-sparkles"></i> Сгенерировать идею
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="notes-section">
+                                <h3><i class="fas fa-eye"></i> Внешность</h3>
+                                <div class="form-group">
+                                    <label for="appearanceNotes">Описание внешности</label>
+                                    <textarea id="appearanceNotes" class="input textarea" 
+                                              placeholder="Опишите внешность вашего персонажа..."></textarea>
+                                </div>
+                                <div class="notes-tools">
+                                    <button type="button" class="btn btn-small btn-secondary" id="clearAppearance">
+                                        <i class="fas fa-eraser"></i> Очистить
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="notes-section">
+                                <h3><i class="fas fa-brain"></i> Личность</h3>
+                                <div class="form-group">
+                                    <label for="personalityNotes">Черты личности, идеалы, привязанности и слабости</label>
+                                    <textarea id="personalityNotes" class="input textarea" 
+                                              placeholder="Опишите личность вашего персонажа..."></textarea>
+                                </div>
+                                <div class="notes-tools">
+                                    <button type="button" class="btn btn-small btn-secondary" id="clearPersonality">
+                                        <i class="fas fa-eraser"></i> Очистить
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="notes-section">
+                                <h3><i class="fas fa-sticky-note"></i> Дополнительные заметки</h3>
+                                <div class="form-group">
+                                    <label for="additionalNotes">Любые другие заметки о персонаже</label>
+                                    <textarea id="additionalNotes" class="input textarea" 
+                                              placeholder="Любые другие заметки о персонаже..."></textarea>
+                                </div>
+                                <div class="notes-tools">
+                                    <button type="button" class="btn btn-small btn-secondary" id="clearAdditional">
+                                        <i class="fas fa-eraser"></i> Очистить
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="character-summary card">
+                            <h3>Сводка персонажа</h3>
+                            <div class="summary-grid grid grid-3" id="characterSummary">
+                                <!-- Сводка будет заполнена динамически -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-footer">
+                        <div class="step-nav">
+                            <button type="button" class="btn btn-secondary prev-step" data-prev="6">
+                                <i class="fas fa-arrow-left"></i> Назад
+                            </button>
+                            <div class="finish-actions">
+                                <button type="button" class="btn btn-secondary" id="saveDraft">
+                                    <i class="fas fa-save"></i> Сохранить черновик
+                                </button>
+                                <button type="submit" class="btn btn-success" id="finishCharacter">
+                                    <i class="fas fa-check-circle"></i> Завершить создание
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <p>D&D Manager &copy; 2023 | Конструктор персонажей D&D 5e</p>
+            <p class="footer-note">Это неофициальный фанатский проект. Dungeons & Dragons, D&D, их логотипы и все связанные с ними названия являются товарными знаками Wizards of the Coast LLC.</p>
+        </div>
+    </footer>
+
+    <!-- Модальные окна -->
+    
+    <!-- Модальное окно изменения HP -->
+    <div class="modal hidden" id="healthChangeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="healthChangeTitle">Получение урона</h3>
+                <button class="modal-close" id="closeHealthModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="healthChangeAmount">Количество</label>
+                    <input type="number" id="healthChangeAmount" class="input" min="1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="healthChangeType">Тип урона (опционально)</label>
+                    <select id="healthChangeType" class="select">
+                        <option value="">Любой</option>
+                        <option value="slashing">Рубящий</option>
+                        <option value="piercing">Колющий</option>
+                        <option value="bludgeoning">Дробящий</option>
+                        <option value="fire">Огонь</option>
+                        <option value="cold">Холод</option>
+                        <option value="lightning">Электричество</option>
+                        <option value="poison">Яд</option>
+                        <option value="psychic">Психический</option>
+                        <option value="radiant">Излучение</option>
+                        <option value="necrotic">Некротический</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="cancelHealthChange">Отмена</button>
+                    <button class="btn btn-primary" id="confirmHealthChange">Применить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно добавления заклинания -->
+    <div class="modal hidden" id="addSpellModal">
+        <div class="modal-content modal-wide">
+            <div class="modal-header">
+                <h3>Добавить заклинание</h3>
+                <button class="modal-close" id="closeSpellModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="spell-selector">
+                    <div class="spell-search-modal">
+                        <input type="text" id="modalSpellSearch" class="input" placeholder="Поиск заклинания...">
+                        <button type="button" class="btn btn-primary" id="modalSearchSpell">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="spell-filters-modal">
+                        <div class="filter-group">
+                            <label>Уровень:</label>
+                            <div class="filter-options" id="modalSpellLevelFilters"></div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Школа:</label>
+                            <div class="filter-options" id="modalSpellSchoolFilters"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="spell-list-modal" id="modalSpellList">
+                        <!-- Список заклинаний для выбора -->
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="cancelAddSpell">Отмена</button>
+                    <button class="btn btn-primary" id="confirmAddSpell">Добавить выбранное</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно управления заклинаниями -->
+    <div class="modal hidden" id="manageSpellsModal">
+        <div class="modal-content modal-wide">
+            <div class="modal-header">
+                <h3>Управление заклинаниями</h3>
+                <button class="modal-close" id="closeManageSpells">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="spell-management">
+                    <div class="known-spells-section">
+                        <h4>Известные заклинания</h4>
+                        <div class="known-spells-list" id="knownSpellsList">
+                            <!-- Список известных заклинаний -->
+                        </div>
+                        <div class="spell-management-actions">
+                            <button class="btn btn-danger" id="removeSelectedSpells">
+                                <i class="fas fa-trash"></i> Удалить выбранные
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="cancelManageSpells">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения -->
+    <div class="modal hidden" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="confirmTitle">Подтверждение</h3>
+                <button class="modal-close" id="closeConfirmModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Вы уверены в этом действии?</p>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="cancelConfirm">Отмена</button>
+                    <button class="btn btn-primary" id="confirmAction">Подтвердить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно завершения -->
+    <div class="modal hidden" id="completionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="completionTitle">Персонаж создан!</h3>
+                <button class="modal-close" id="closeCompletionModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="completion-message">
+                    <i class="fas fa-check-circle success-icon"></i>
+                    <p id="completionMessage">Ваш персонаж успешно сохранен.</p>
+                </div>
+                <div class="completion-actions">
+                    <a href="characters.html" class="btn btn-primary">
+                        <i class="fas fa-users"></i> К моим персонажам
+                    </a>
+                    <button class="btn btn-secondary" id="createAnother">
+                        <i class="fas fa-plus"></i> Создать еще одного
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <!-- Подключение JavaScript файлов -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/shared-functions.js"></script>
+    <script src="js/creator.js"></script>
+    <script src="js/character-creator.js"></script>
+</body>
+</html>

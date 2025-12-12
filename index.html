@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D Manager - Управление персонажами</title>
+
+    <!-- Стили -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-dragon"></i>
+                    <span>D&D Manager</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link active"><i class="fas fa-home"></i> <span>Главная</span></a></li>
+                    <li><a href="creator.html" class="nav-link"><i class="fas fa-user-plus"></i> <span>Конструктор</span></a></li>
+                    <li><a href="encyclopedia.html" class="nav-link"><i class="fas fa-book"></i> <span>Энциклопедия</span></a></li>
+                    <li><a href="characters.html" class="nav-link"><i class="fas fa-users"></i> <span>Мои персонажи</span></a></li>
+                    <li><a href="#login" class="nav-link login-btn"><i class="fas fa-key"></i> <span>Войти</span></a></li>
+                </ul>
+                <button class="burger-menu" id="burgerMenu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Главный контент -->
+    <main class="main-content">
+        <section class="hero-section">
+            <div class="container">
+                <h1>Управляйте своими персонажами D&D</h1>
+                <p class="hero-description">
+                    Создавайте, развивайте и управляйте персонажами Dungeons & Dragons 5e с помощью нашего интуитивного инструмента. 
+                    Минималистичный интерфейс и пошаговый конструктор помогут быстро собрать героя для ваших приключений.
+                </p>
+                <div class="action-cards grid grid-3">
+                    <a href="creator.html" class="action-card card">
+                        <div class="action-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <h3>Создать нового персонажа</h3>
+                        <p>Пошаговый конструктор с подсказками</p>
+                    </a>
+                    <a href="encyclopedia.html" class="action-card card">
+                        <div class="action-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3>Открыть энциклопедию</h3>
+                        <p>Расы, классы, заклинания и правила</p>
+                    </a>
+                    <a href="characters.html" class="action-card card">
+                        <div class="action-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Мои персонажи</h3>
+                        <p>Управление созданными персонажами</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <p>D&D Manager &copy; 2023 | Локальное приложение для управления персонажами D&D 5e</p>
+            <p class="footer-note">Это неофициальный фанатский проект. Dungeons & Dragons, D&D, их логотипы и все связанные с ними названия являются товарными знаками Wizards of the Coast LLC.</p>
+        </div>
+    </footer>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <!-- Подключение JavaScript файлов -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/shared-functions.js"></script>
+    <script src="js/home.js"></script>
+</body>
+</html>

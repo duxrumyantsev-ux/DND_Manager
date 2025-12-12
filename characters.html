@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои персонажи - D&D Manager</title>
+
+    <!-- Стили -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-dragon"></i>
+                    <span>D&D Manager</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> <span>Главная</span></a></li>
+                    <li><a href="creator.html" class="nav-link"><i class="fas fa-user-plus"></i> <span>Конструктор</span></a></li>
+                    <li><a href="encyclopedia.html" class="nav-link"><i class="fas fa-book"></i> <span>Энциклопедия</span></a></li>
+                    <li><a href="characters.html" class="nav-link active"><i class="fas fa-users"></i> <span>Мои персонажи</span></a></li>
+                    <li><a href="#login" class="nav-link login-btn"><i class="fas fa-key"></i> <span>Войти</span></a></li>
+                </ul>
+                <button class="burger-menu" id="burgerMenu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Мои персонажи -->
+    <main class="characters-main">
+        <div class="container">
+            <div class="characters-header">
+                <h1>Мои персонажи</h1>
+                <p class="characters-subtitle">Управление и просмотр созданных персонажей</p>
+                
+                <div class="characters-controls">
+                    <a href="creator.html" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Создать нового персонажа
+                    </a>
+                    
+                    <div class="characters-actions">
+                        <button class="btn btn-secondary" id="refreshCharacters">
+                            <i class="fas fa-sync-alt"></i> Обновить
+                        </button>
+                        <div class="characters-stats">
+                            <span class="stat-badge" id="charactersCount">0</span>
+                            <span>персонажей</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Фильтры и поиск -->
+            <div class="characters-filters card">
+                <div class="filter-section">
+                    <h3>Фильтры персонажей</h3>
+                    <div class="filter-group">
+                        <label for="characterClassFilter">Класс:</label>
+                        <select id="characterClassFilter" class="select">
+                            <option value="">Все классы</option>
+                            <!-- Классы будут заполнены динамически -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="characterRaceFilter">Раса:</label>
+                        <select id="characterRaceFilter" class="select">
+                            <option value="">Все расы</option>
+                            <!-- Расы будут заполнены динамически -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="characterLevelFilter">Уровень:</label>
+                        <select id="characterLevelFilter" class="select">
+                            <option value="">Все уровни</option>
+                            <option value="1-4">1-4 (Новичок)</option>
+                            <option value="5-10">5-10 (Опытный)</option>
+                            <option value="11-16">11-16 (Мастер)</option>
+                            <option value="17-20">17-20 (Легенда)</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="characterStatusFilter">Статус:</label>
+                        <select id="characterStatusFilter" class="select">
+                            <option value="">Все статусы</option>
+                            <option value="active">Активные</option>
+                            <option value="dead">Мертвые</option>
+                            <option value="retired">Завершенные</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="search-section">
+                    <div class="search-box">
+                        <input type="text" id="characterSearch" class="input" placeholder="Поиск по имени, предыстории...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <button class="btn btn-secondary" id="clearFilters">
+                        <i class="fas fa-eraser"></i> Очистить фильтры
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Сортировка -->
+            <div class="characters-sort">
+                <label for="sortBy">Сортировка:</label>
+                <select id="sortBy" class="select">
+                    <option value="name">По имени (А-Я)</option>
+                    <option value="name-desc">По имени (Я-А)</option>
+                    <option value="level">По уровню (возрастание)</option>
+                    <option value="level-desc">По уровню (убывание)</option>
+                    <option value="updated">Последние измененные</option>
+                    <option value="created">Сначала новые</option>
+                </select>
+            </div>
+            
+            <!-- Загрузчик -->
+            <div class="characters-loader" id="charactersLoader">
+                <div class="loader"></div>
+                <span>Загрузка персонажей...</span>
+            </div>
+            
+            <!-- Список персонажей -->
+            <div class="characters-list grid grid-2" id="charactersList">
+                <!-- Персонажи будут загружены через JavaScript -->
+            </div>
+            
+            <!-- Пустое состояние -->
+            <div class="empty-state hidden" id="emptyCharacters">
+                <i class="fas fa-users"></i>
+                <h3>У вас еще нет персонажей</h3>
+                <p>Создайте своего первого персонажа, нажав кнопку "Создать нового персонажа".</p>
+                <a href="creator.html" class="btn btn-primary">Создать персонажа</a>
+            </div>
+            
+            <!-- Нет результатов поиска -->
+            <div class="empty-state hidden" id="noCharactersFound">
+                <i class="fas fa-search"></i>
+                <h3>Персонажи не найдены</h3>
+                <p>Попробуйте изменить параметры поиска или фильтрации.</p>
+                <button class="btn btn-secondary" id="resetSearch">Сбросить фильтры</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <p>D&D Manager &copy; 2023 | Мои персонажи</p>
+            <p class="footer-note">Это неофициальный фанатский проект. Dungeons & Dragons, D&D, их логотипы и все связанные с ними названия являются товарными знаками Wizards of the Coast LLC.</p>
+        </div>
+    </footer>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div class="modal hidden" id="deleteConfirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Подтверждение удаления</h3>
+                <button class="modal-close" id="closeDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteConfirmMessage">Вы уверены, что хотите удалить этого персонажа?</p>
+                <p class="text-danger"><i class="fas fa-exclamation-triangle"></i> Это действие нельзя отменить.</p>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="cancelDelete">Отмена</button>
+                    <button class="btn btn-danger" id="confirmDelete">Удалить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно экспорта -->
+    <div class="modal hidden" id="exportModal">
+        <div class="modal-content modal-wide">
+            <div class="modal-header">
+                <h3>Экспорт персонажа</h3>
+                <button class="modal-close" id="closeExportModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="export-options">
+                    <div class="export-option">
+                        <h4><i class="fas fa-file-export"></i> Экспорт в JSON</h4>
+                        <p>Экспортируйте данные персонажа в формате JSON для использования в других приложениях.</p>
+                        <button class="btn btn-primary" id="exportJson">
+                            <i class="fas fa-download"></i> Экспортировать JSON
+                        </button>
+                    </div>
+                    
+                    <div class="export-option">
+                        <h4><i class="fas fa-print"></i> Печать листа персонажа</h4>
+                        <p>Создайте версию для печати с красивым оформлением.</p>
+                        <button class="btn btn-primary" id="exportPrint">
+                            <i class="fas fa-print"></i> Печать
+                        </button>
+                    </div>
+                    
+                    <div class="export-option">
+                        <h4><i class="fas fa-file-pdf"></i> Экспорт в PDF</h4>
+                        <p>Создайте PDF файл с листом персонажа (требуется подключение к интернету).</p>
+                        <button class="btn btn-primary" id="exportPdf" disabled>
+                            <i class="fas fa-file-pdf"></i> Экспортировать PDF (скоро)
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="export-preview hidden" id="exportPreview">
+                    <h4>Предпросмотр JSON</h4>
+                    <pre id="jsonPreview"></pre>
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary" id="copyJson">
+                            <i class="fas fa-copy"></i> Копировать в буфер
+                        </button>
+                        <button class="btn btn-secondary" id="closePreview">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно быстрого просмотра -->
+    <div class="modal hidden" id="quickViewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="quickViewTitle">Быстрый просмотр</h3>
+                <button class="modal-close" id="closeQuickViewModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="quickViewContent">
+                    <!-- Контент будет заполнен динамически -->
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="closeQuickView">Закрыть</button>
+                    <a href="#" class="btn btn-primary" id="openFullView">Открыть полностью</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <!-- Подключение JavaScript файлов -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/shared-functions.js"></script>
+    <script src="js/characters-list.js"></script>
+</body>
+</html>

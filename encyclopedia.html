@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Энциклопедия - D&D Manager</title>
+ 
+    <!-- Стили -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-dragon"></i>
+                    <span>D&D Manager</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> <span>Главная</span></a></li>
+                    <li><a href="creator.html" class="nav-link"><i class="fas fa-user-plus"></i> <span>Конструктор</span></a></li>
+                    <li><a href="encyclopedia.html" class="nav-link active"><i class="fas fa-book"></i> <span>Энциклопедия</span></a></li>
+                    <li><a href="characters.html" class="nav-link"><i class="fas fa-users"></i> <span>Мои персонажи</span></a></li>
+                    <li><a href="#login" class="nav-link login-btn"><i class="fas fa-key"></i> <span>Войти</span></a></li>
+                </ul>
+                <button class="burger-menu" id="burgerMenu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Энциклопедия -->
+    <main class="encyclopedia-main">
+        <div class="container">
+            <div class="encyclopedia-header">
+                <h1>Энциклопедия D&D 5e</h1>
+                <p class="encyclopedia-subtitle">Справочная информация по расам, классам, заклинаниям и правилам</p>
+                <div class="encyclopedia-stats">
+                    <div class="stats-loader hidden" id="statsLoader">
+                        <div class="loader"></div>
+                        <span>Загрузка данных...</span>
+                    </div>
+                    <div class="stats-info hidden" id="statsInfo"></div>
+                </div>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab-header">
+                    <button class="tab-btn active" data-tab="races">
+                        <i class="fas fa-users"></i> <span>Расы</span>
+                    </button>
+                    <button class="tab-btn" data-tab="classes">
+                        <i class="fas fa-shield-alt"></i> <span>Классы</span>
+                    </button>
+                    <button class="tab-btn" data-tab="spells">
+                        <i class="fas fa-magic"></i> <span>Заклинания</span>
+                    </button>
+                    <button class="tab-btn" data-tab="rules">
+                        <i class="fas fa-book-open"></i> <span>Правила</span>
+                    </button>
+                    <button class="tab-btn" data-tab="feats">
+                        <i class="fas fa-star"></i> <span>Черты</span>
+                    </button>
+                </div>
+                
+                <div class="tab-content">
+                    <!-- Расы -->
+                    <div class="tab-pane active" id="races">
+                        <div class="tab-pane-header">
+                            <h2>Расы</h2>
+                            <p>Раса определяет физические и культурные особенности вашего персонажа.</p>
+                        </div>
+                        
+                        <div class="encyclopedia-controls">
+                            <div class="search-box">
+                                <input type="text" id="raceSearch" class="input" placeholder="Поиск расы...">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="filter-options">
+                                <select id="raceFilter" class="select">
+                                    <option value="">Все расы</option>
+                                    <option value="humanoid">Гуманоиды</option>
+                                    <option value="small">Маленькие</option>
+                                    <option value="magical">Магические</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="encyclopedia-grid grid grid-2" id="racesGrid">
+                            <div class="skeleton-card card">
+                                <div class="skeleton-line" style="width: 60%; height: 24px;"></div>
+                                <div class="skeleton-line" style="width: 80%; height: 16px; margin-top: 12px;"></div>
+                                <div class="skeleton-line" style="width: 100%; height: 12px; margin-top: 8px;"></div>
+                            </div>
+                            <div class="skeleton-card card">
+                                <div class="skeleton-line" style="width: 60%; height: 24px;"></div>
+                                <div class="skeleton-line" style="width: 80%; height: 16px; margin-top: 12px;"></div>
+                                <div class="skeleton-line" style="width: 100%; height: 12px; margin-top: 8px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="empty-state hidden" id="noRacesFound">
+                            <i class="fas fa-users-slash"></i>
+                            <h3>Расы не найдены</h3>
+                            <p>Попробуйте изменить параметры поиска или фильтрации.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Классы -->
+                    <div class="tab-pane" id="classes">
+                        <div class="tab-pane-header">
+                            <h2>Классы</h2>
+                            <p>Класс определяет основные способности и специализацию вашего персонажа.</p>
+                        </div>
+                        
+                        <div class="encyclopedia-controls">
+                            <div class="search-box">
+                                <input type="text" id="classSearch" class="input" placeholder="Поиск класса...">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="filter-options">
+                                <select id="classFilter" class="select">
+                                    <option value="">Все классы</option>
+                                    <option value="martial">Боевые</option>
+                                    <option value="magic">Магические</option>
+                                    <option value="hybrid">Гибридные</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="encyclopedia-grid grid grid-2" id="classesGrid">
+                            <div class="skeleton-card card">
+                                <div class="skeleton-line" style="width: 60%; height: 24px;"></div>
+                                <div class="skeleton-line" style="width: 80%; height: 16px; margin-top: 12px;"></div>
+                                <div class="skeleton-line" style="width: 100%; height: 12px; margin-top: 8px;"></div>
+                            </div>
+                            <div class="skeleton-card card">
+                                <div class="skeleton-line" style="width: 60%; height: 24px;"></div>
+                                <div class="skeleton-line" style="width: 80%; height: 16px; margin-top: 12px;"></div>
+                                <div class="skeleton-line" style="width: 100%; height: 12px; margin-top: 8px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="empty-state hidden" id="noClassesFound">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Классы не найдены</h3>
+                            <p>Попробуйте изменить параметры поиска или фильтрации.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Заклинания -->
+                    <div class="tab-pane" id="spells">
+                        <div class="tab-pane-header">
+                            <h2>Заклинания</h2>
+                            <p>Магические формулы, которые создают различные эффекты.</p>
+                        </div>
+                        
+                        <div class="spells-container grid grid-2" id="spellsContainer">
+                            <div class="skeleton-card card">
+                                <div class="skeleton-line" style="width: 60%; height: 24px;"></div>
+                                <div class="skeleton-line" style="width: 80%; height: 16px; margin-top: 12px;"></div>
+                                <div class="skeleton-line" style="width: 100%; height: 12px; margin-top: 8px;"></div>
+                            </div>
+                            <div class="skeleton-card card">
+                                <div class="skeleton-line" style="width: 60%; height: 24px;"></div>
+                                <div class="skeleton-line" style="width: 80%; height: 16px; margin-top: 12px;"></div>
+                                <div class="skeleton-line" style="width: 100%; height: 12px; margin-top: 8px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="empty-state hidden" id="noSpellsFound">
+                            <i class="fas fa-magic"></i>
+                            <h3>Заклинания не найдены</h3>
+                            <p>Данные о заклинаниях отсутствуют в базе данных.</p>
+                        </div>
+                    </div>
+                        
+                        <div class="spells-container grid grid-2" id="spellsContainer">
+                            <div class="skeleton-card card">
+                                <div class="skeleton-line" style="width: 60%; height: 24px;"></div>
+                                <div class="skeleton-line" style="width: 80%; height: 16px; margin-top: 12px;"></div>
+                                <div class="skeleton-line" style="width: 100%; height: 12px; margin-top: 8px;"></div>
+                            </div>
+                            <div class="skeleton-card card">
+                                <div class="skeleton-line" style="width: 60%; height: 24px;"></div>
+                                <div class="skeleton-line" style="width: 80%; height: 16px; margin-top: 12px;"></div>
+                                <div class="skeleton-line" style="width: 100%; height: 12px; margin-top: 8px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="empty-state hidden" id="noSpellsFound">
+                            <i class="fas fa-magic"></i>
+                            <h3>Заклинания не найдены</h3>
+                            <p>Попробуйте изменить параметры поиска или фильтрации.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Правила -->
+                    <div class="tab-pane" id="rules">
+                        <div class="tab-pane-header">
+                            <h2>Правила D&D 5e</h2>
+                            <p>Основные механики и правила игры в Dungeons & Dragons.</p>
+                        </div>
+                        
+                        <div class="rules-grid grid grid-2" id="rulesGrid">
+                            <!-- Правила будут загружены из Firebase -->
+                        </div>
+                        
+                        <div class="rules-loader hidden" id="rulesLoader">
+                            <div class="loader"></div>
+                            <span>Загрузка правил...</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Черты -->
+                    <div class="tab-pane" id="feats">
+                        <div class="tab-pane-header">
+                            <h2>Черты</h2>
+                            <p>Особые способности, которые могут быть получены персонажем.</p>
+                        </div>
+                        
+                        <div class="encyclopedia-controls">
+                            <div class="search-box">
+                                <input type="text" id="featSearch" class="input" placeholder="Поиск черты...">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="filter-options">
+                                <select id="featFilter" class="select">
+                                    <option value="">Все черты</option>
+                                    <option value="combat">Боевые</option>
+                                    <option value="magic">Магические</option>
+                                    <option value="utility">Утилитарные</option>
+                                    <option value="skill">Навыковые</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="encyclopedia-grid grid grid-2" id="featsGrid">
+                            <div class="skeleton-card card">
+                                <div class="skeleton-line" style="width: 60%; height: 24px;"></div>
+                                <div class="skeleton-line" style="width: 80%; height: 16px; margin-top: 12px;"></div>
+                                <div class="skeleton-line" style="width: 100%; height: 12px; margin-top: 8px;"></div>
+                            </div>
+                            <div class="skeleton-card card">
+                                <div class="skeleton-line" style="width: 60%; height: 24px;"></div>
+                                <div class="skeleton-line" style="width: 80%; height: 16px; margin-top: 12px;"></div>
+                                <div class="skeleton-line" style="width: 100%; height: 12px; margin-top: 8px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="empty-state hidden" id="noFeatsFound">
+                            <i class="fas fa-star"></i>
+                            <h3>Черты не найдены</h3>
+                            <p>Попробуйте изменить параметры поиска или фильтрации.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <p>D&D Manager &copy; 2023 | Энциклопедия D&D 5e</p>
+            <p class="footer-note">Это неофициальный фанатский проект. Dungeons & Dragons, D&D, их логотипы и все связанные с ними названия являются товарными знаками Wizards of the Coast LLC.</p>
+        </div>
+    </footer>
+
+    <!-- Модальное окно детальной информации -->
+    <div class="modal hidden" id="detailModal">
+        <div class="modal-content modal-wide">
+            <div class="modal-header">
+                <h3 id="modalTitle">Заголовок</h3>
+                <button class="modal-close" id="closeDetailModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContent">
+                    <!-- Контент будет заполнен динамически -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <!-- Подключение JavaScript файлов -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/shared-functions.js"></script>
+    <script src="js/encyclopedia.js"></script>
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр персонажа - D&D Manager</title>
+    
+    <!-- Стили -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Стили для страницы просмотра */
+        .character-view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .character-title h1 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 2.5rem;
+        }
+        
+        .character-subtitle {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            color: var(--text-secondary);
+        }
+        
+        .character-subtitle span {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .character-view-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .character-section {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        
+        .character-section h3 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .character-section.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .info-value {
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+        
+        .combat-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-large {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .stat-large .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            line-height: 1;
+        }
+        
+        .stat-large .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+        
+        .abilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .ability-card {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .ability-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .ability-name {
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+        
+        .ability-abbr {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .ability-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+        
+        .ability-modifier {
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .ability-modifier.positive {
+            background: rgba(var(--success-rgb), 0.1);
+            color: var(--success);
+        }
+        
+        .ability-modifier.negative {
+            background: rgba(var(--danger-rgb), 0.1);
+            color: var(--danger);
+        }
+        
+        .weapons-list, .spells-preview {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .weapon-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+        
+        .weapon-name {
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+        
+        .weapon-details {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .spell-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .note-section h4 {
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+        
+        .note-section p {
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        
+        .loading-state, .error-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .loading-state i {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .error-state i {
+            color: var(--danger);
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .character-view-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .character-title h1 {
+                font-size: 2rem;
+            }
+            
+            .character-view-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .abilities-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .abilities-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .character-subtitle {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+        /* Стили для навыков */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .skill-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .skill-item.skill-proficient {
+            background: rgba(var(--primary-rgb), 0.1);
+            border-color: var(--primary);
+        }
+
+        .skill-name {
+            font-weight: 500;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .proficiency-badge {
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .skill-details {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .skill-ability {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .skill-modifier {
+            font-weight: bold;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            min-width: 2.5rem;
+            text-align: center;
+        }
+
+        .skill-modifier.positive {
+            background: rgba(var(--success-rgb), 0.1);
+            color: var(--success);
+        }
+
+        .skill-modifier.negative {
+            background: rgba(var(--danger-rgb), 0.1);
+            color: var(--danger);
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-dragon"></i>
+                    <span>D&D Manager</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> <span>Главная</span></a></li>
+                    <li><a href="creator.html" class="nav-link"><i class="fas fa-user-plus"></i> <span>Конструктор</span></a></li>
+                    <li><a href="encyclopedia.html" class="nav-link"><i class="fas fa-book"></i> <span>Энциклопедия</span></a></li>
+                    <li><a href="characters.html" class="nav-link"><i class="fas fa-users"></i> <span>Мои персонажи</span></a></li>
+                    <li><a href="#login" class="nav-link login-btn"><i class="fas fa-key"></i> <span>Войти</span></a></li>
+                </ul>
+                <button class="burger-menu" id="burgerMenu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="character-view-main">
+        <div class="container">
+            <div id="characterViewContainer">
+                <!-- Контент будет загружен динамически -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <p>D&D Manager &copy; 2023 | Просмотр персонажа D&D 5e</p>
+            <p class="footer-note">Это неофициальный фанатский проект. Dungeons & Dragons, D&D, их логотипы и все связанные с ними названия являются товарными знаками Wizards of the Coast LLC.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <!-- Подключение JavaScript файлов -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/shared-functions.js"></script>
+    <script src="js/character-view.js"></script>
+</body>
+</html>

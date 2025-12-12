@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование персонажа - D&D Manager</title>
+    
+    <!-- Стили -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Стили для страницы редактирования */
+        .edit-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .edit-tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .edit-tab:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+        
+        .edit-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .edit-tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .edit-tab-content.active {
+            display: block;
+        }
+        
+        .edit-actions {
+            position: sticky;
+            bottom: 0;
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-top: 2px solid var(--border);
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        
+        .edit-section {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .edit-section h3 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .two-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .character-preview-edit {
+            position: sticky;
+            top: 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Стили для характеристик */
+        .abilities-grid-edit {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .ability-edit-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .ability-edit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .ability-edit-name {
+            font-weight: bold;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .ability-edit-abbr {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .ability-edit-score {
+            margin: 0.5rem 0;
+        }
+        
+        .ability-score-input {
+            width: 100%;
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            background: white;
+        }
+        
+        .ability-score-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .ability-edit-modifier {
+            margin: 0.5rem 0;
+        }
+        
+        .modifier-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .ability-modifier-edit {
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .ability-modifier-edit.positive {
+            background: rgba(var(--success-rgb), 0.1);
+            color: var(--success);
+        }
+        
+        .ability-modifier-edit.negative {
+            background: rgba(var(--danger-rgb), 0.1);
+            color: var(--danger);
+        }
+        
+        .ability-edit-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .btn-score-minus, .btn-score-plus {
+            flex: 1;
+            padding: 0.25rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-score-minus:hover, .btn-score-plus:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Стили для брони и AC */
+        .ac-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 2px solid var(--primary);
+            margin: 0.5rem 0;
+        }
+        
+        .ac-calculation {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .armor-type-info {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+        
+        /* Стили для оружия */
+        .weapon-row-edit {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+        
+        .weapon-name-input-edit,
+        .weapon-damage-input-edit,
+        .weapon-type-select-edit {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            background: white;
+        }
+        
+        .weapon-name-input-edit:focus,
+        .weapon-damage-input-edit:focus,
+        .weapon-type-select-edit:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn-weapon-remove {
+            padding: 0.5rem;
+        }
+        
+        .empty-weapons {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+        
+        .empty-weapons i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Стили для заклинаний */
+        .loading-spells {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+        
+        .loader-small {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        .spell-level-section-edit {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .spell-level-section-edit h4 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+        
+        .spells-grid-edit {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0.75rem;
+        }
+        
+        .spell-card-edit {
+            padding: 1rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .spell-card-edit:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .spell-card-edit.selected {
+            background: rgba(var(--primary-rgb), 0.1);
+            border-color: var(--primary);
+        }
+        
+        .spell-name {
+            font-weight: 500;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        
+        .spell-details {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .spell-school {
+            display: inline-block;
+            background: var(--bg-tertiary);
+            padding: 0.125rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+        }
+        
+        /* Предпросмотр */
+        .preview-content {
+            margin-top: 1rem;
+        }
+        
+        .preview-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .preview-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .preview-level,
+        .preview-class,
+        .preview-race {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Состояния загрузки и ошибок */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .loader-large {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        .error-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .error-state i {
+            color: var(--danger);
+            margin-bottom: 1rem;
+        }
+        
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        /* Анимации */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .edit-tabs {
+                flex-direction: column;
+            }
+            
+            .edit-tab {
+                border-radius: 8px;
+                margin-bottom: 0.5rem;
+            }
+            
+            .two-columns {
+                grid-template-columns: 1fr;
+            }
+            
+            .edit-actions {
+                flex-direction: column;
+            }
+            
+            .abilities-grid-edit {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .weapon-row-edit {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .abilities-grid-edit {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* Стили для навыков */
+        .skills-section {
+            margin-top: 2rem;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .skill-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:hover {
+            border-color: var(--primary);
+            background: rgba(var(--primary-rgb), 0.05);
+        }
+
+        .skill-checkbox {
+            flex-shrink: 0;
+        }
+
+        .skill-checkbox input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            cursor: pointer;
+        }
+
+        .skill-info {
+            flex-grow: 1;
+            margin-left: 0.75rem;
+        }
+
+        .skill-name {
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .skill-ability {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.125rem;
+        }
+
+        .skill-modifier {
+            flex-shrink: 0;
+            min-width: 3rem;
+            text-align: center;
+        }
+
+        .modifier-value {
+            font-weight: bold;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .modifier-value.positive {
+            background: rgba(var(--success-rgb), 0.1);
+            color: var(--success);
+        }
+
+        .modifier-value.negative {
+            background: rgba(var(--danger-rgb), 0.1);
+            color: var(--danger);
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-dragon"></i>
+                    <span>D&D Manager</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> <span>Главная</span></a></li>
+                    <li><a href="creator.html" class="nav-link"><i class="fas fa-user-plus"></i> <span>Конструктор</span></a></li>
+                    <li><a href="encyclopedia.html" class="nav-link"><i class="fas fa-book"></i> <span>Энциклопедия</span></a></li>
+                    <li><a href="characters.html" class="nav-link"><i class="fas fa-users"></i> <span>Мои персонажи</span></a></li>
+                    <li><a href="#login" class="nav-link login-btn"><i class="fas fa-key"></i> <span>Войти</span></a></li>
+                </ul>
+                <button class="burger-menu" id="burgerMenu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="character-edit-main">
+        <div class="container">
+            <div class="character-edit-header">
+                <h1 id="editTitle">Редактирование персонажа</h1>
+                <p class="edit-subtitle" id="editSubtitle">Загрузка...</p>
+            </div>
+            
+            <!-- Вкладки -->
+            <div class="edit-tabs" id="editTabs">
+                <div class="edit-tab active" data-tab="basic">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Основное</span>
+                </div>
+                <div class="edit-tab" data-tab="abilities">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Характеристики</span>
+                </div>
+                <div class="edit-tab" data-tab="combat">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Боевка</span>
+                </div>
+                <div class="edit-tab" data-tab="equipment">
+                    <i class="fas fa-backpack"></i>
+                    <span>Снаряжение</span>
+                </div>
+                <div class="edit-tab" data-tab="spells">
+                    <i class="fas fa-magic"></i>
+                    <span>Заклинания</span>
+                </div>
+                <div class="edit-tab" data-tab="notes">
+                    <i class="fas fa-sticky-note"></i>
+                    <span>Заметки</span>
+                </div>
+            </div>
+            
+            <!-- Контент вкладок -->
+            <div class="edit-content">
+                
+                <!-- Вкладка: Основное -->
+                <div class="edit-tab-content active" id="tabBasic">
+                    <div class="two-columns">
+                        <div>
+                            <div class="edit-section">
+                                <h3><i class="fas fa-user"></i> Личные данные</h3>
+                                <div class="form-group">
+                                    <label for="editCharacterName">
+                                        <i class="fas fa-signature"></i> Имя персонажа *
+                                    </label>
+                                    <input type="text" id="editCharacterName" class="input" placeholder="Введите имя персонажа" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="editCharacterLevel">
+                                        <i class="fas fa-level-up-alt"></i> Уровень
+                                    </label>
+                                    <input type="number" id="editCharacterLevel" class="input" min="1" max="20" value="1">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="editCharacterXP">
+                                        <i class="fas fa-star"></i> Опыт (XP)
+                                    </label>
+                                    <input type="number" id="editCharacterXP" class="input" min="0" value="0">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="editCharacterSpeed">
+                                        <i class="fas fa-walking"></i> Скорость (фт.)
+                                    </label>
+                                    <input type="number" id="editCharacterSpeed" class="input" min="0" value="30">
+                                </div>
+                            </div>
+                            
+                            <div class="edit-section">
+                                <h3><i class="fas fa-users"></i> Происхождение</h3>
+                                <div class="form-group">
+                                    <label for="editCharacterRace">
+                                        <i class="fas fa-users"></i> Раса *
+                                    </label>
+                                    <select id="editCharacterRace" class="select">
+                                        <option value="">Выберите расу...</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="editCharacterClass">
+                                        <i class="fas fa-shield-alt"></i> Класс *
+                                    </label>
+                                    <select id="editCharacterClass" class="select">
+                                        <option value="">Выберите класс...</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="editCharacterSubclass">
+                                        <i class="fas fa-star"></i> Подкласс
+                                    </label>
+                                    <select id="editCharacterSubclass" class="select">
+                                        <option value="">Выберите подкласс...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="edit-section">
+                                <h3><i class="fas fa-book"></i> Предыстория</h3>
+                                <div class="form-group">
+                                    <label for="editCharacterBackground">
+                                        <i class="fas fa-history"></i> Предыстория
+                                    </label>
+                                    <select id="editCharacterBackground" class="select">
+                                        <option value="">Выберите предысторию...</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="editCharacterAlignment">
+                                        <i class="fas fa-balance-scale"></i> Мировоззрение
+                                    </label>
+                                    <select id="editCharacterAlignment" class="select">
+                                        <option value="">Выберите мировоззрение...</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="edit-section">
+                                    <h3><i class="fas fa-user-circle"></i> Внешность</h3>
+                                    <div class="form-group">
+                                        <label for="editCharacterAge">Возраст</label>
+                                        <input type="text" id="editCharacterAge" class="input" placeholder="Возраст персонажа">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="editCharacterHeight">Рост</label>
+                                        <input type="text" id="editCharacterHeight" class="input" placeholder="Рост персонажа">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="editCharacterWeight">Вес</label>
+                                        <input type="text" id="editCharacterWeight" class="input" placeholder="Вес персонажа">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="editCharacterEyes">Глаза</label>
+                                        <input type="text" id="editCharacterEyes" class="input" placeholder="Цвет глаз">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="editCharacterSkin">Кожа</label>
+                                        <input type="text" id="editCharacterSkin" class="input" placeholder="Цвет кожи">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="editCharacterHair">Волосы</label>
+                                        <input type="text" id="editCharacterHair" class="input" placeholder="Цвет и тип волос">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="character-preview-edit" id="editPreview">
+                                <h3><i class="fas fa-eye"></i> Быстрый просмотр</h3>
+                                <p>Заполните основные данные для просмотра</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Вкладка: Характеристики -->
+                <div class="edit-tab-content" id="tabAbilities">
+                    <div class="edit-section">
+                        <h3><i class="fas fa-chart-bar"></i> Характеристики</h3>
+                        <div class="abilities-grid-edit" id="abilitiesGridEdit">
+                            <!-- Характеристики будут загружены динамически -->
+                        </div>
+                        
+                        <div style="margin-top: 2rem; text-align: center;">
+                            <button class="btn btn-primary" id="generateScoresEdit">
+                                <i class="fas fa-dice"></i> Сгенерировать характеристики
+                            </button>
+                            <p class="text-small" style="margin-top: 0.5rem; color: var(--text-secondary);">
+                                Метод генерации: 4d6, отбрасывается наименьший результат
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Вкладка: Боевка -->
+                <div class="edit-tab-content" id="tabCombat">
+                    <div class="two-columns">
+                        <div>
+                            <div class="edit-section">
+                                <h3><i class="fas fa-heart"></i> Здоровье</h3>
+                                <div class="form-group">
+                                    <label for="editHPMax">Максимальное HP</label>
+                                    <input type="number" id="editHPMax" class="input" min="1" value="10">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="editHPCurrent">Текущее HP</label>
+                                    <input type="number" id="editHPCurrent" class="input" min="0" value="10">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="editHPTemp">Временное HP</label>
+                                    <input type="number" id="editHPTemp" class="input" min="0" value="0">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="editHitDice">Кость хитов</label>
+                                    <input type="text" id="editHitDice" class="input" value="d8" placeholder="d8">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="edit-section">
+                                <h3><i class="fas fa-shield-alt"></i> Защита</h3>
+                                <div class="form-group">
+                                    <label for="editArmorType">Тип брони</label>
+                                    <select id="editArmorType" class="select">
+                                        <option value="none">Без брони</option>
+                                    </select>
+                                    <div class="armor-type-info" id="armorTypeInfo">
+                                        Без брони: AC = 10 + бонус Ловкости + щит
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="editArmorShield">
+                                        <i class="fas fa-shield"></i> Щит (+2 AC)
+                                    </label>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Класс брони (AC)</label>
+                                    <div class="ac-display" id="editArmorClass">10</div>
+                                    <div class="ac-calculation" id="acBreakdown">
+                                        Расчет: 10 (базовый) + 0 (Ловкость) + 0 (Щит) = 10
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Вкладка: Снаряжение -->
+                <div class="edit-tab-content" id="tabEquipment">
+                    <div class="edit-section">
+                        <h3><i class="fas fa-fist-raised"></i> Оружие</h3>
+                        <div id="editWeaponsContainer">
+                            <!-- Оружие будет загружено динамически -->
+                        </div>
+                        <button type="button" class="btn btn-secondary" id="addWeaponEdit">
+                            <i class="fas fa-plus"></i> Добавить оружие
+                        </button>
+                    </div>
+                    
+                    <div class="edit-section">
+                        <h3><i class="fas fa-gem"></i> Снаряжение и предметы</h3>
+                        <div class="form-group">
+                            <label for="editEquipment">
+                                Снаряжение (каждый предмет с новой строки или через запятую)
+                            </label>
+                            <textarea id="editEquipment" class="textarea" rows="6" placeholder="Меч
+Щит
+Зелье лечения x3
+Верёвка, 50 футов
+Факел x5
+50 золотых"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Вкладка: Заклинания -->
+                <div class="edit-tab-content" id="tabSpells">
+                    <div class="edit-section">
+                        <h3><i class="fas fa-magic"></i> Заклинания</h3>
+                        <div id="editSpellsContainer">
+                            <div class="loading-spells">
+                                <div class="loader-small"></div>
+                                <p>Загрузка заклинаний...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Вкладка: Заметки -->
+                <div class="edit-tab-content" id="tabNotes">
+                    <div class="edit-section">
+                        <h3><i class="fas fa-sticky-note"></i> Заметки о персонаже</h3>
+                        <div class="form-group">
+                            <label for="editCharacterHistory">
+                                <i class="fas fa-scroll"></i> История персонажа
+                            </label>
+                            <textarea id="editCharacterHistory" class="textarea" rows="6" placeholder="Напишите историю вашего персонажа..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editCharacterAppearance">
+                                <i class="fas fa-eye"></i> Внешность (детальное описание)
+                            </label>
+                            <textarea id="editCharacterAppearance" class="textarea" rows="4" placeholder="Детальное описание внешности персонажа..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editCharacterPersonality">
+                                <i class="fas fa-comment"></i> Личность и характер
+                            </label>
+                            <textarea id="editCharacterPersonality" class="textarea" rows="4" placeholder="Опишите личность персонажа, его черты характера, идеалы, привязанности и слабости..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editCharacterAdditional">
+                                <i class="fas fa-edit"></i> Дополнительные заметки
+                            </label>
+                            <textarea id="editCharacterAdditional" class="textarea" rows="4" placeholder="Любые дополнительные заметки, мысли, цели персонажа..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Кнопки действий -->
+            <div class="edit-actions">
+                <div>
+                    <a href="characters.html" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Назад к списку
+                    </a>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-danger" id="deleteCharacterEdit">
+                        <i class="fas fa-trash"></i> Удалить
+                    </button>
+                    <button class="btn btn-success" id="saveCharacterEdit">
+                        <i class="fas fa-save"></i> Сохранить изменения
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <p>D&D Manager &copy; 2023 | Редактирование персонажа</p>
+            <p class="footer-note">Это неофициальный фанатский проект. Dungeons & Dragons, D&D, их логотипы и все связанные с ними названия являются товарными знаками Wizards of the Coast LLC.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <!-- Подключение JavaScript файлов -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/shared-functions.js"></script>
+    <script src="js/character-edit.js"></script>
+</body>
+</html>
